@@ -1,3 +1,9 @@
 #! /bin/bash
+ 
+ #docker run 设置代理
+ #--env HTTP_PROXY="http://192.168.19.1:10809" \
+ #--env HTTPS_PROXY="http://192.168.19.1:10809" \
 
-docker run -it --rm -v /home/core/data/www/composer:/tmp -v $(pwd):$(pwd) -w $(pwd) wenshunbiao/composer sh -c "composer $*"
+docker run -it --rm \
+ -v /home/core/data/www/composer:/tmp \
+ -v $(pwd):$(pwd) -w $(pwd) timeerror/composer:php7.4.29 sh -c "composer $*"

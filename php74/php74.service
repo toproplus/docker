@@ -1,0 +1,24 @@
+[Unit]
+Description=php74
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=30
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop php74
+ExecStartPre=-/usr/bin/docker kill php74
+ExecStartPre=-/usr/bin/docker rm php74
+ExecStartPre=-/home/core/docker/shell/install_fleetctl php74
+ExecStartPre=-/usr/bin/docker network create nginx-network
+ExecStart=/usr/bin/docker run --name php74 --net nginx-network -v /home/core/data/php74:/php -v /home/core/data/www:/www -v /home/core/data/www/composer:/root/.composer timeerror/php:7.4.29-ffmpeg4.4
+ExecStop=/usr/bin/docker stop php74
+ExecStop=/usr/bin/docker kill php74
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
+
