@@ -9,8 +9,7 @@ RUN wget http://www.ffmpeg.org/releases/ffmpeg-4.4.tar.gz && tar -zxvf ffmpeg-4.
  && rm ffmpeg-4.4.tar.gz \
  && cd ffmpeg-4.4 && ./configure --prefix=/usr/local/ffmpeg \
  && make && make install && cd ../ && rm -rf ffmpeg-4.4
-RUN touch /etc/profile.d/ffmpeg.sh && echo "export PATH=\$PATH:/usr/local/ffmpeg/bin" >> /etc/profile.d/ffmpeg.sh \
- && source /etc/profile
+RUN export PATH=$PATH:/usr/local/ffmpeg/bin
 
 RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
@@ -20,16 +19,18 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 
 #RUN pecl search swoole
 
-RUN install-php-extensions gd pdo_mysql bcmath opcache pcntl zip redis mcrypt ssh2 swoole sockets mongodb
+RUN install-php-extensions gd mysqli pdo_mysql bcmath opcache pcntl zip redis mcrypt ssh2 swoole sockets mongodb
 
 # 默认关闭一些扩展
-RUN cd /usr/local/etc/php/conf.d && rm -rf docker-php-ext-swoole.ini
+#RUN cd /usr/local/etc/php/conf.d && rm -rf docker-php-ext-swoole.ini
 
 RUN echo "export TERM=xterm" >> /root/.bashrc \
     && rm -rf /usr/local/etc/php-fpm.conf \
     && mkdir /php \
     && ln -s /php/php.ini /usr/local/etc/php/php.ini \
     && ln -s /php/php-fpm.conf /usr/local/etc/php-fpm.conf
+
+RUN apk del build-base     
 
 WORKDIR /www
 

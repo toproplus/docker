@@ -1,10 +1,10 @@
 #! /bin/bash
  
- #docker run 设置代理
  #--env HTTP_PROXY="http://192.168.19.1:10809" \
  #--env HTTPS_PROXY="http://192.168.19.1:10809" \
-
+ #--env NO_PROXY="*.example.com,127.0.0.1" \
+ 
 docker run -it --rm \
  --net nginx-network \
- -v /home/core/data/www/composer:/tmp \
- -v $(pwd):$(pwd) -w $(pwd) timeerror/composer:php7.4.29 sh -c "composer $*"
+ -v /home/core/data/www/:/www \
+ -v $(pwd):$(pwd) -w $(pwd) timeerror/php:7.4.29-ffmpeg4.4 sh -c "php $*"

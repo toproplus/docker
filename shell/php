@@ -5,5 +5,6 @@
  #--env NO_PROXY="*.example.com,127.0.0.1" \
  
 docker run -it --rm \
+ --net nginx-network \
  -v /home/core/data/www/:/www \
- -v $(pwd):$(pwd) -w $(pwd) timeerror/php:7.4.29 sh -c "php $*"
+ -v $(pwd):$(pwd) -w $(pwd) wenshunbiao/php:7.2.34 sh -c "php $*"

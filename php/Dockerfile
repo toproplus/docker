@@ -2,12 +2,19 @@ FROM php:7.2.34-fpm-alpine
 
 ENV SWOOLE_VERSION 4.4.15
 
+RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+
 RUN apk add --no-cache bash autoconf build-base \
     && apk add --no-cache bash wget libpng-dev libmcrypt-dev libstdc++ libevent-dev \
     && docker-php-ext-install gd mysqli pdo_mysql bcmath opcache pcntl zip \
-    && pecl install redis \
+    && pecl install -o -f redis \
     && pecl install xdebug \
     && pecl install channel://pecl.php.net/mcrypt-1.0.1 \
+
+    && apk add --no-cache libldap2-dev -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
+    && docker-php-ext-install ldap \
 
     && apk add --no-cache freetype-dev jpeg-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
@@ -27,9 +34,7 @@ RUN apk add --no-cache bash autoconf build-base \
     && tar zxvf v${SWOOLE_VERSION}.tar.gz && cd swoole-src-${SWOOLE_VERSION} && cp -a /usr/include/openssl /var/www/html/swoole-src-${SWOOLE_VERSION}/include && phpize \
     && ./configure --enable-http2 --enable-mysqlnd --enable-openssl --with-openssl-dir=/usr/include/openssl \
     && make && make install \
-    && cd .. && rm -rf v${SWOOLE_VERSION}.tar.gz swoole-src-${SWOOLE_VERSION} \
-
-    && apk del build-base autoconf 
+    && cd .. && rm -rf v${SWOOLE_VERSION}.tar.gz swoole-src-${SWOOLE_VERSION} 
 
 RUN echo "export TERM=xterm" >> /root/.bashrc \
     && rm -rf /usr/local/etc/php-fpm.conf \
