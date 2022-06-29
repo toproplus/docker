@@ -4,7 +4,7 @@
 需借助 Systemd 服务管理，支持此服务的 Linux 系统都可安装，建议使用 Centos7+ 系统  
 
 ## Step.1 Install Docker
-    
+
 请自行安装Docker  
 参考教程：https://www.kancloud.cn/wenshunbiao/wenshunbiao/1310878
 
@@ -13,7 +13,7 @@
 请使用root用户安装，忽略一些常规性的报错输出
 
     # useradd -d /home/core -m core && cd /home/core
-    # git clone https://github.com/wenshunbiao/docker.git
+    # git clone https://github.com/toproplus/docker.git
     # chmod -R 777 docker/shell && export PATH="/home/core/docker/shell:$PATH"
     # install_coreos
 
