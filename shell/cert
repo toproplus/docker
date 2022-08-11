@@ -7,7 +7,7 @@ volume_path=/home/core/data
 work_path=/home/core/data
 down_path=$nginx_path/acme-tiny
 py_file=$down_path/python-script/acme_tiny.py
-challenge_path=$www_path/challenge/
+challenge_path=$www_path/challenge
 
 if [ "$1" == "i" ]; then
     if [ -f "$py_file" ]; then
@@ -40,7 +40,7 @@ elif [ "$1" == "ini" ]; then
      mkdir -p $cert_path
      openssl genrsa 4096 > $cert_path/account.key
      openssl genrsa 4096 > $cert_path/cert.key
-     openssl req -new -sha256 -key $cert_path/cert.key -subj "/CN=$domain" > $cert_path/apply.csr
+     openssl req -new -sha256 -key $cert_path/cert.key -subj "/CN=$domain" > $cert_path/apply.csr || { echo "初始化失败！"; exit;};
      wget -O - https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem > $cert_path/intermediate.pem || { echo "初始化失败！"; exit;};
      openssl rsa -in $cert_path/cert.key -text > $cert_path/key.pem
      echo "
