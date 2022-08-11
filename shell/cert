@@ -90,12 +90,12 @@ python:2 python $script_path/acme_tiny.py \
     
           server {
               listen      443 ssl;
-              server_name $2;
+              server_name $domain;
               include challenge.conf; 
 
               # ...
 
-              include acme-tiny/$2/ssl.conf; 
+              include acme-tiny/$domain/ssl.conf; 
           }
     "; 
 elif [ "$1" == "h" ]; then
