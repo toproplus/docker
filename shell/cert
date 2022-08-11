@@ -2,10 +2,12 @@
 
 nginx_path=/home/core/data/nginx
 www_path=/home/core/data/www
+www_docker_path=/www
 volume_path=/home/core/data
 work_path=/home/core/data
 down_path=$nginx_path/acme-tiny
 py_file=$down_path/python-script/acme_tiny.py
+challenge_path=$www_path/challenge/
 
 if [ "$1" == "i" ]; then
     if [ -f "$py_file" ]; then
@@ -14,8 +16,14 @@ if [ "$1" == "i" ]; then
     fi
     echo 'acme-tiny 安装中...';
     mkdir -p $down_path
+    mkdir -p $challenge_path
     /usr/bin/docker pull python:2
     git clone https://github.com/diafygi/acme-tiny.git "$down_path/python-script" || { echo "安装失败！"; exit; };
+    echo "
+          location ^~ /.well-known/acme-challenge/ {
+                 alias $www_docker_path/challenge/;
+          }
+          " > $nginx_path/challenge.conf
     echo "acme-tiny 安装完成！";
 elif [ "$1" == "ini" ]; then
      if [ ! -n "$2" ]; then
@@ -29,15 +37,12 @@ elif [ "$1" == "ini" ]; then
      echo "$2 初始化...";
      domain=$2
      cert_path=$nginx_path/acme-tiny/$domain
-     challenge_path=$www_path/challenge/$domain
      mkdir -p $cert_path
-     mkdir -p $challenge_path
      openssl genrsa 4096 > $cert_path/account.key
      openssl genrsa 4096 > $cert_path/cert.key
      openssl req -new -sha256 -key $cert_path/cert.key -subj "/CN=$domain" > $cert_path/apply.csr
      wget -O - https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem > $cert_path/intermediate.pem || { echo "初始化失败！"; exit;};
      openssl rsa -in $cert_path/cert.key -text > $cert_path/key.pem
-     touch $cert_path/ssl.conf;
      echo "
       ssl_certificate acme-tiny/$domain/cert.pem;
       ssl_certificate_key acme-tiny/$domain/cert.key;
@@ -52,9 +57,12 @@ elif [ "$1" == "ini" ]; then
      " > $cert_path/ssl.conf;
      echo "$2 初始化完成！";
      echo "申请证书前，请确认该域名可以正常访问，且nginx已有如下配置：
+
            location ^~ /.well-known/acme-challenge/ {
-                 alias /www/challenge/\$host/;
+                 alias $www_docker_path/challenge/;
            }
+           # 以上已封装，可替换如下：
+           # include challenge.conf; 
      ";
 elif [ "$1" == "a" ]; then
     if [ ! -n "$2" ]; then
@@ -70,7 +78,6 @@ elif [ "$1" == "a" ]; then
     script_name=acme-tiny-$domain-$RANDOM
     cert_path=$nginx_path/acme-tiny/$domain
     script_path=$nginx_path/acme-tiny/python-script
-    challenge_path=$www_path/challenge/$domain
     /usr/bin/docker run --rm --name $script_name \
 -v $volume_path:$volume_path \
 -w $work_path \
@@ -80,20 +87,22 @@ python:2 python $script_path/acme_tiny.py \
 --acme-dir $challenge_path > $cert_path/signed.crt || { echo "证书申请失败！"; exit; };
     cat $cert_path/signed.crt $cert_path/intermediate.pem > $cert_path/cert.pem    
     echo "SSL证书申请成功！请新增监听443端口的nginx配置：
+    
           server {
               listen      443 ssl;
               server_name $2;
-              
+              include challenge.conf; 
+
               # ...
 
               include acme-tiny/$2/ssl.conf; 
           }
     "; 
 elif [ "$1" == "h" ]; then
-   echo "cert i                      下载安装自动申请SSL证书的脚本";
-   echo "cert ini www.example.com    初始化指定域名申请证书所需的数据";
-   echo "cert a www.example.com      指定域名申请证书, 往后自动更新证书只执行此命令";
+   echo "$0 i                      下载安装自动申请SSL证书的脚本";
+   echo "$0 ini www.example.com    初始化指定域名申请证书所需的数据";
+   echo "$0 a www.example.com      指定域名申请证书, 往后自动更新证书只执行此命令";
 else
-   echo "cert h                      查看用法";
+   echo "$0 h                      查看用法";
 fi
 
