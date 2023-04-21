@@ -7,4 +7,4 @@
 docker run -it --rm \
  --net nginx-network \
  -v /home/core/data/www/composer:/tmp \
- -v $(pwd):$(pwd) -w $(pwd) timeerror/php:8.2 sh -c "composer $*"
+ -v $(pwd):$(pwd) -w $(pwd) timeerror/php:8.2.5 sh -c "composer $*"

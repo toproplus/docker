@@ -1,4 +1,4 @@
-FROM php:8.2-alpine3.16
+FROM php:8.2.5-fpm-alpine3.17
 
 RUN apk add --no-cache build-base bash curl
 
@@ -17,7 +17,7 @@ RUN export PATH=$PATH:/usr/local/ffmpeg/bin
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions gd pdo_mysql bcmath opcache pcntl zip redis mcrypt swoole mongodb sockets ssh2
+RUN install-php-extensions gd pdo_mysql bcmath opcache pcntl zip redis mcrypt swoole mongodb sockets ssh2 event protobuf pgsql memcache
 
 # 默认关闭一些扩展
 #RUN cd /usr/local/etc/php/conf.d && rm -rf docker-php-ext-swoole.ini
