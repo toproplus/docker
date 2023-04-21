@@ -12,7 +12,7 @@ ExecStartPre=-/usr/bin/docker kill php82
 ExecStartPre=-/usr/bin/docker rm php82
 ExecStartPre=-/home/core/docker/shell/install_fleetctl php82
 ExecStartPre=-/usr/bin/docker network create nginx-network
-ExecStart=/usr/bin/docker run --name php82 --net nginx-network -v /home/core/data/php82:/php -v /home/core/data/www:/www -v /home/core/data/www/composer:/root/.composer timeerror/php:8.2
+ExecStart=/usr/bin/docker run --name php82 --net nginx-network -v /home/core/data/php82:/php -v /home/core/data/www:/www -v /home/core/data/www/composer:/root/.composer timeerror/php:8.2.5
 ExecStop=/usr/bin/docker stop php82
 ExecStop=/usr/bin/docker kill php82
 
