@@ -1,0 +1,12 @@
+[program:laravel-worker-name]
+process_name=%(program_name)s_%(process_num)02d
+directory=/www/laravel
+command=php artisan queue:work
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=root
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/app/laravel-worker-name.log
