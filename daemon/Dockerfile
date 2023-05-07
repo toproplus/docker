@@ -1,4 +1,4 @@
-FROM wenshunbiao/php
+FROM timeerror/php:7.4.29-ffmpeg4.4
 
 RUN apk add --no-cache supervisor
 
