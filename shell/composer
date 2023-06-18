@@ -4,7 +4,7 @@
  #--env HTTP_PROXY="http://192.168.19.1:10809" \
  #--env HTTPS_PROXY="http://192.168.19.1:10809" \
 
-docker run -it --rm \
+docker run --rm \
  --net nginx-network \
  -v /home/core/data/www/composer:/tmp \
  -v $(pwd):$(pwd) -w $(pwd) timeerror/composer:php7.4.29 sh -c "composer $*"
