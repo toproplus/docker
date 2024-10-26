@@ -17,7 +17,7 @@ if [ "$1" == "i" ]; then
     echo 'acme-tiny 安装中...';
     mkdir -p $down_path
     mkdir -p $challenge_path
-    /usr/bin/docker pull python:2
+    /usr/bin/docker pull python:3
     git clone https://github.com/diafygi/acme-tiny.git "$down_path/python-script" || { echo "安装失败！"; exit; };
     echo "
           location ^~ /.well-known/acme-challenge/ {
@@ -81,7 +81,7 @@ elif [ "$1" == "a" ]; then
     /usr/bin/docker run --rm --name $script_name \
 -v $volume_path:$volume_path \
 -w $work_path \
-python:2 python $script_path/acme_tiny.py \
+python:3 python $script_path/acme_tiny.py \
 --account-key $cert_path/account.key \
 --csr $cert_path/apply.csr \
 --acme-dir $challenge_path > $cert_path/signed.crt || { echo "证书申请失败！"; exit; };
