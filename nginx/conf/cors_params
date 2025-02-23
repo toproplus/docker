@@ -1,0 +1,13 @@
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+        add_header 'Access-Control-Allow-Headers' 'App-Code, OS-Type, Authorization, Content-Type, Content-Length, Host, X-Requested-With, Accept, Accept-Encoding, Origin, User-Agent, Referer, Connection, Access-Control-Allow-Origin, If-Modified-Since, Cache-Control, Wechatpay-Serial, Wechatpay-Signature, Wechatpay-Signature-Type, Wechatpay-Timestamp, Wechatpay-Nonce, Request-ID';
+
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' 'App-Code, OS-Type, Authorization, Content-Type, Content-Length, Host, X-Requested-With, Accept, Accept-Encoding, Origin, User-Agent, Referer, Connection, Access-Control-Allow-Origin, If-Modified-Since, Cache-Control, Wechatpay-Serial, Wechatpay-Signature, Wechatpay-Signature-Type, Wechatpay-Timestamp, Wechatpay-Nonce, Request-ID';
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Length' 0;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            return 204;
+        }

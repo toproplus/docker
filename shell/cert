@@ -9,7 +9,7 @@ down_path=$nginx_path/acme-tiny
 py_file=$down_path/python-script/acme_tiny.py
 challenge_path=$www_path/challenge
 
-if [ "$1" == "i" ]; then
+if [ "$1" == "install" ]; then
     if [ -f "$py_file" ]; then
        echo "acme-tiny 早已安装！";
        exit;
@@ -99,7 +99,7 @@ python:3 python $script_path/acme_tiny.py \
           }
     "; 
 elif [ "$1" == "h" ]; then
-   echo "$0 i                      下载安装自动申请SSL证书的脚本";
+   echo "$0 install                下载安装自动申请SSL证书的脚本";
    echo "$0 ini www.example.com    初始化指定域名申请证书所需的数据";
    echo "$0 a www.example.com      指定域名申请证书, 往后自动更新证书只执行此命令";
 else
