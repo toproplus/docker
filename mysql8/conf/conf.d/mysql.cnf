@@ -1,9 +1,13 @@
 [mysqld]
-skip-host-cache
+host_cache_size=0
 skip-name-resolve
 sql_mode=NO_AUTO_VALUE_ON_ZERO
 default-time_zone='+8:00'
 # 修改配置
+# 慢日志开关，日志位置一般位于/var/lib/mysql/xxx-slow.log
+slow_query_log=1
+# 慢查询日志的时间定义（秒）
+long_query_time=3
 # 默认151
 max_connections=1510
 # 默认100
@@ -11,7 +15,7 @@ mysqlx_max_connections=1000
 # 默认2000
 table_definition_cache=20000
 # 默认4000
-table_open_cache=40000
+table_open_cache=4000
 # 默认256
 schema_definition_cache=2560
 # 默认256
@@ -19,4 +23,4 @@ tablespace_definition_cache=2560
 # 默认256
 stored_program_definition_cache=2560
 # 默认16
-table_open_cache_instances=160
+table_open_cache_instances=64

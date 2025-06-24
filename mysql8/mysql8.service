@@ -1,0 +1,24 @@
+[Unit]
+Description=mysql8
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=30
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop mysql8
+ExecStartPre=-/usr/bin/docker kill mysql8
+ExecStartPre=-/usr/bin/docker rm mysql8
+ExecStartPre=-/home/core/docker/shell/install_fleetctl mysql8
+ExecStartPre=-/usr/bin/docker network create nginx-network
+ExecStart=/usr/bin/docker run --name mysql8 --net nginx-network -p 3306:3306 -v /home/core/data/mysql8/conf.d:/etc/mysql/conf.d -v /home/core/data/mysql8/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=yellow mysql:8.0.42
+ExecStop=/usr/bin/docker stop mysql8
+ExecStop=/usr/bin/docker kill mysql8
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
+
