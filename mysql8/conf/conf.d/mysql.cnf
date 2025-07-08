@@ -1,7 +1,7 @@
 [mysqld]
-host_cache_size=0
 skip-name-resolve
 sql_mode=NO_AUTO_VALUE_ON_ZERO
+host_cache_size=0
 default-time_zone='+8:00'
 # 修改配置
 # 慢日志开关，日志位置一般位于/var/lib/mysql/xxx-slow.log
