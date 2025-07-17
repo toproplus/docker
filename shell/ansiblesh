@@ -1,0 +1,99 @@
+#! /bin/bash
+
+# 使用说明：
+# mkidr ansible && cd ansible
+# ansiblesh ansible --verson
+# ansiblesh ansible-playbook --verson
+
+# 定义配置文件名称
+CONFIG_FILE="ansible.cfg"
+# 检查ansible.cfg文件是否存在
+if [ ! -f "$CONFIG_FILE" ]; then
+    if [ -n "$(ls -A)" ]; then
+      echo "当前目录不是空目录，初始化失败"
+      exit 0
+    fi
+    
+    echo "未找到 $CONFIG_FILE 文件，正在创建..."
+
+    # 创建 ansible.cfg 文件并写入一些基础配置
+    cat <<EOL > $CONFIG_FILE
+[defaults]
+inventory = ./hosts.ini
+remote_user = root
+private_key_file = /root/.ssh/id_rsa
+host_key_checking = False
+
+[privilege_escalation]
+become_method = sudo
+become_user = root
+become_ask_pass = False
+EOL
+
+    echo "$CONFIG_FILE 已创建，请根据需要修改配置"
+fi
+# 定义主机文件名称
+HOSTS_FILE="hosts.ini"
+# 检查hosts.ini文件是否存在
+if [ ! -f "$HOSTS_FILE" ]; then
+    echo "未找到 $HOSTS_FILE 文件，正在创建..."
+
+    # 创建 hosts.ini 文件并写入一些基础配置
+    cat <<EOL > $HOSTS_FILE
+# [test_server1]
+# server01 ansible_host=192.168.72.83 ansible_ssh_port=22 ansible_python_interpreter=/usr/bin/python3
+
+# [test_server2]
+# server02 ansible_host=192.168.72.84 ansible_ssh_port=22 ansible_python_interpreter=/usr/bin/python3
+
+# 指定私钥
+# [test_server3]
+# server03 ansible_host=192.168.72.84 ansible_ssh_private_key_file=/home/user/.ssh/id_rsa_dev
+
+# 为整个组指定私钥
+# [test_server2:vars]
+# ansible_ssh_private_key_file=/path/to/id_rsa_prod
+
+# 本机，注意，docker运行ansible，则主机是docker本身
+# [local]
+# localhost ansible_connection=local
+EOL
+
+    echo "$HOSTS_FILE 已创建，请根据需要修改配置"
+fi
+
+# 定义示例剧本
+BOOK_FILE="example.yml"
+# 检查剧本文件是否存在
+if [ ! -f "$BOOK_FILE" ]; then
+    echo "未找到 $BOOK_FILE 剧本示例文件，正在创建..."
+
+    # 创建剧本文件并写入一些基础配置
+    cat <<EOL > $BOOK_FILE
+---
+- name: 在远程主机测试命令
+  hosts: all
+  become: no
+  tasks:
+    - name: 运行git命令测试
+      command: git --version
+      register: gitv
+
+    - name: git命令测试结果
+      ansible.builtin.debug:
+        msg: "{{ gitv.stdout }}"
+EOL
+
+    echo "$BOOK_FILE 已创建，请根据需要修改配置"
+    echo "请修改 $HOSTS_FILE 配置后，测试运行：ansiblesh ansible-playbook $BOOK_FILE";
+fi
+
+docker run --rm \
+  -v ~/.ssh:/root/.ssh \
+  -v ~/.aws:/root/.aws \
+  -v $(pwd):/apps \
+  -w /apps \
+  -e ANSIBLE_CONFIG=/apps/ansible.cfg \
+  --network host \
+  alpinelinux/ansible:latest \
+  "$@"
