@@ -1,7 +1,7 @@
-FROM timeerror/php:8.2.5
+FROM timeerror/php:7.4.29-ffmpeg4.4
 
-RUN apk add --no-cache supervisor py3-pip \
-    && pip install --upgrade supervisor
+RUN apk update && apk add --no-cache supervisor \
+   && rm -rf /var/cache/apk/*
 
 RUN wget https://getcomposer.org/download/2.5.5/composer.phar
 RUN chmod +x composer.phar

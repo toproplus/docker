@@ -1,0 +1,10 @@
+#! /bin/bash
+ 
+ #--env HTTP_PROXY="http://192.168.19.1:10809" \
+ #--env HTTPS_PROXY="http://192.168.19.1:10809" \
+ #--env NO_PROXY="*.example.com,127.0.0.1" \
+ 
+docker run --rm \
+ --net nginx-network \
+ -v /home/core/data/www/:/www \
+ -v $(pwd):$(pwd) -w $(pwd) timeerror/php:8.2.29 sh -c "php $*"

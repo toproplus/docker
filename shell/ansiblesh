@@ -23,6 +23,7 @@ inventory = ./hosts.ini
 remote_user = root
 private_key_file = /root/.ssh/id_rsa
 host_key_checking = False
+log_path = ./ansible.log
 
 [privilege_escalation]
 become_method = sudo
@@ -76,7 +77,7 @@ if [ ! -f "$BOOK_FILE" ]; then
   become: no
   tasks:
     - name: 运行git命令测试
-      command: git --version
+      shell: git --version
       register: gitv
 
     - name: git命令测试结果
@@ -88,7 +89,7 @@ EOL
     echo "请修改 $HOSTS_FILE 配置后，测试运行：ansiblesh ansible-playbook $BOOK_FILE";
 fi
 
-docker run --rm \
+/usr/bin/docker run --rm \
   -v ~/.ssh:/root/.ssh \
   -v ~/.aws:/root/.aws \
   -v $(pwd):/apps \
