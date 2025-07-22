@@ -14,6 +14,7 @@
 
     # useradd -d /home/core -m core && cd /home/core
     # git clone https://github.com/toproplus/docker.git
+    # git config core.fileMode false
     # chmod -R 777 docker/shell && export PATH="/home/core/docker/shell:$PATH"
     # install_coreos
 

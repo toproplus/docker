@@ -11,7 +11,8 @@ ExecStartPre=-/usr/bin/docker stop daemon8
 ExecStartPre=-/usr/bin/docker kill daemon8
 ExecStartPre=-/usr/bin/docker rm daemon8
 ExecStartPre=-/usr/bin/docker network create nginx-network
-ExecStart=/usr/bin/docker run --name daemon8 --net=nginx-network -v /home/core/data/www:/www -v /home/core/data/www/composer:/root/.composer -v /home/core/data/daemon8/supervisord.conf:/supervisor/supervisord.conf -v /home/core/data/daemon8/supervisord.d:/supervisor/supervisord.d -v /home/core/data/daemon8/logs:/app -v /home/core/data/daemon8/php:/php timeerror/daemon:php82
+ExecStartPre=-/usr/bin/chmod 755 /home/core/data/daemon8/php/entrypoint.sh
+ExecStart=/usr/bin/docker run --name daemon8 --net=nginx-network -v /home/core/data/www:/www -v /home/core/data/www/composer:/root/.composer -v /home/core/data/daemon8/supervisord.conf:/supervisor/supervisord.conf -v /home/core/data/daemon8/supervisord.d:/supervisor/supervisord.d -v /home/core/data/daemon8/logs:/app -v /home/core/data/daemon8/php:/php timeerror/daemon:php8.2.5
 ExecStop=/usr/bin/docker stop daemon8
 ExecStop=/usr/bin/docker kill daemon8
 

@@ -11,7 +11,8 @@ ExecStartPre=-/usr/bin/docker stop daemon
 ExecStartPre=-/usr/bin/docker kill daemon
 ExecStartPre=-/usr/bin/docker rm daemon
 ExecStartPre=-/usr/bin/docker network create nginx-network
-ExecStart=/usr/bin/docker run --name daemon --net=nginx-network -v /home/core/data/www:/www -v /home/core/data/www/composer:/root/.composer -v /home/core/data/daemon/supervisord.conf:/supervisor/supervisord.conf -v /home/core/data/daemon/supervisord.d:/supervisor/supervisord.d -v /home/core/data/daemon/logs:/app -v /home/core/data/daemon/php:/php timeerror/daemon:php74
+ExecStartPre=-/usr/bin/chmod 755 /home/core/data/daemon/php/entrypoint.sh
+ExecStart=/usr/bin/docker run --name daemon --net=nginx-network -v /home/core/data/www:/www -v /home/core/data/www/composer:/root/.composer -v /home/core/data/daemon/supervisord.conf:/supervisor/supervisord.conf -v /home/core/data/daemon/supervisord.d:/supervisor/supervisord.d -v /home/core/data/daemon/logs:/app -v /home/core/data/daemon/php:/php timeerror/daemon:php7.4.29-ffmpeg4.4
 ExecStop=/usr/bin/docker stop daemon
 ExecStop=/usr/bin/docker kill daemon
 

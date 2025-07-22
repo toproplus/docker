@@ -4,7 +4,17 @@
  #--env HTTP_PROXY="http://192.168.19.1:10809" \
  #--env HTTPS_PROXY="http://192.168.19.1:10809" \
 
+if [ ! -f "/home/core/data/php82/php.ini" ]; then
+   /home/core/docker/shell/i php82
+fi
+
+if [ ! -f "/home/core/data/php82/entrypoint.sh" ]; then
+   cp /home/core/docker/php82/conf/entrypoint.sh /home/core/data/php82/entrypoint.sh
+   chmod 755 /home/core/data/php82/entrypoint.sh
+fi
+
 docker run --rm \
  --net nginx-network \
+ -v /home/core/data/php82:/php \
  -v /home/core/data/www/composer:/tmp \
  -v $(pwd):$(pwd) -w $(pwd) timeerror/composer:php8.2.29 sh -c "composer $*"

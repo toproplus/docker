@@ -1,26 +1,46 @@
-FROM php:7.4.33-fpm-alpine
-#FROM php:7.4.29-fpm-alpine
+# timeerror/php:7.4.29           => PHP_VERSION=7.4.29 FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.20
+# timeerror/php:7.4.29-ffmpeg4.4 => PHP_VERSION=7.4.29 FFMPEG_VERSION=4.4.6 MONGODB_VERSION=1.15
+# timeerror/php:7.4.33           => PHP_VERSION=7.4.33 FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.20
 
-RUN apk add --no-cache build-base bash curl nasm x264-dev x265-dev libvpx-dev fdk-aac-dev c-ares \ 
+ARG PHP_VERSION=7.4.29
+FROM php:${PHP_VERSION}-fpm-alpine
+
+ARG FFMPEG_VERSION=7.1.1
+ARG MONGODB_VERSION=1.15
+
+RUN apk add --no-cache build-base bash curl openssl nasm x264-dev x265-dev libvpx-dev fdk-aac-dev c-ares autoconf unzip \ 
  && rm -rf /var/cache/apk/*
 
 RUN wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && tar -zxvf yasm-1.3.0.tar.gz \
  && rm yasm-1.3.0.tar.gz && cd yasm-1.3.0 && ./configure && make && make install && cd ../ && rm -rf yasm-1.3.0
 
- RUN wget https://ffmpeg.org/releases/ffmpeg-7.1.1.tar.gz && tar -zxvf ffmpeg-7.1.1.tar.gz \
- && rm ffmpeg-7.1.1.tar.gz \
- && cd ffmpeg-7.1.1 && ./configure --enable-gpl --enable-libx264 --enable-libx265 --enable-libvpx --enable-libfdk-aac --enable-nonfree \
- && make -j2 V=1 && make install && cd ../ && rm -rf ffmpeg-7.1.1
+RUN wget https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz && tar -zxvf ffmpeg-${FFMPEG_VERSION}.tar.gz \
+    && rm ffmpeg-${FFMPEG_VERSION}.tar.gz \
+    && cd ffmpeg-${FFMPEG_VERSION} && ./configure --enable-gpl --enable-libx264 --enable-libx265 --enable-libvpx --enable-libfdk-aac --enable-nonfree \
+    && make -j2 V=1 && make install && cd ../ && rm -rf ffmpeg-${FFMPEG_VERSION}
 
 #RUN set -eux && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions gd imagick pdo_mysql mysqli pdo_pgsql apcu amqp bcmath opcache pcntl zip redis mcrypt swoole mongodb-^1.15@stable sockets ssh2 event protobuf memcached igbinary decimal uuid xdebug
+RUN install-php-extensions gd imagick pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcre pcntl posix
+# 7.4特别安装
+RUN install-php-extensions mysqli mcrypt 
+
+# 只安装，不启用，通过入口脚本动态启用
+
+# 容易安装失败的先安装
+RUN IPE_DONT_ENABLE=1 install-php-extensions blackfire 
+
+RUN IPE_DONT_ENABLE=1 install-php-extensions xdebug memcached apcu ssh2 protobuf \
+    ast bitset uuid igbinary brotli bz2 calendar csv dba ds enchant ev excimer \
+    exif ffi grpc maxminddb xsl gettext intl snmp msgpack snappy inotify \
+    rdkafka tideways ioncube_loader newrelic uopz swoole-^4.8@stable
+
+RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable
+
 RUN chmod -R 755 /usr/local/lib/php/extensions/no-debug-non-zts-*
 
-# 默认关闭一些扩展
-# RUN cd /usr/local/etc/php/conf.d && mv docker-php-ext-swoole.ini docker-php-ext-swoole.ini.backup
 
 RUN echo "export TERM=xterm" >> /root/.bashrc \
     && mv /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf.backup \
@@ -31,5 +51,10 @@ RUN echo "export TERM=xterm" >> /root/.bashrc \
 RUN apk del build-base
 
 WORKDIR /www
+
+# 入口脚本
+COPY conf/entrypoint.sh /php/entrypoint.sh
+RUN chmod 755 /php/entrypoint.sh
+ENTRYPOINT ["/php/entrypoint.sh"]
 
 CMD php-fpm
