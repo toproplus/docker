@@ -48,7 +48,9 @@ RUN echo "export TERM=xterm" >> /root/.bashrc \
     && ln -s /php/php.ini /usr/local/etc/php/php.ini \
     && ln -s /php/php-fpm.conf /usr/local/etc/php-fpm.conf
 
-RUN apk del build-base
+
+# 删除纯构建时依赖    
+RUN apk del --no-cache build-base nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf
 
 WORKDIR /www
 

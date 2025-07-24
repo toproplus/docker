@@ -4,7 +4,17 @@
  #--env HTTPS_PROXY="http://192.168.19.1:10809" \
  #--env NO_PROXY="*.example.com,127.0.0.1" \
  
+if [ ! -f "/home/core/data/php74/php.ini" ]; then
+   /home/core/docker/shell/i php74
+fi
+
+if [ ! -f "/home/core/data/php74/entrypoint.sh" ]; then
+   cp /home/core/docker/php74/conf/entrypoint.sh /home/core/data/php74/entrypoint.sh
+   chmod 755 /home/core/data/php74/entrypoint.sh
+fi
+
 docker run --rm \
  --net nginx-network \
+ -v /home/core/data/php74:/php \
  -v /home/core/data/www/:/www \
  -v $(pwd):$(pwd) -w $(pwd) timeerror/php:7.4.33 sh -c "php $*"

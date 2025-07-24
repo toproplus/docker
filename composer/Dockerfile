@@ -22,13 +22,10 @@ RUN wget https://getcomposer.org/download/2.5.5/composer.phar
 RUN chmod +x composer.phar
 RUN mv composer.phar /usr/local/bin/composer
 
-# 切换用户
-# USER www-data
+
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 RUN composer config -gl | grep repositories.packagist.org.url
-# RUN composer
-# 切换回root
-# USER root
+
 
 # ENTRYPOINT [""]
 
