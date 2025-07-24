@@ -14,9 +14,9 @@
 
     # useradd -d /home/core -m core && cd /home/core
     # git clone https://github.com/toproplus/docker.git
-    # git config core.fileMode false
     # chmod -R 777 docker/shell && export PATH="/home/core/docker/shell:$PATH"
     # install_coreos
+    # cd docker && git config core.fileMode false
 
 安装到此结束，以下是一些使用示例或提示。
 -----
@@ -59,25 +59,23 @@
 
 ## install service
 
-    i php                         # install php server
+    i php74                       # install php server
     i nginx                       # install nginx share
     i redis                       # install redis server
 
 ## start/restart service
 
-    s php                         # start/restart php server
+    s php74                       # start/restart php server
     s nginx                       # start/restart nginx share
     s redis                       # start/restart redis server
 
 ## stop service
 
-    p php                         # stop php server
+    p php74                       # stop php server
     p nginx                       # stop nginx share
     p redis                       # stop redis server
 
 ## 进阶
-
-如果您觉得本项目不错，当现有服务不能完全适合您，或者没有您需要的服务时，您可以选择 Fork 本仓库  
 
 1. 扩展服务非常简单，如新增一个 nas 服务，您可以复制一份已有的服务来修改，如 `cp -r redis nas`  
 2. 接着修改里面的文件，如Dockerfile的构建内容、redis.service重命名为nas.service并修改里面的内容和换成你自己的镜像  
@@ -86,12 +84,23 @@
 
 这样一个服务就扩展完毕啦，修改原有服务的话，直接修改原文件就好了，然后自己重新build一个镜像，并把service文件里面的镜像替换成自己的
 
+## Fork Me
 
-## 致谢
+1. 如果您觉得本项目不错，当现有服务不能完全适合您，或者没有您需要的服务时，您可以选择 Fork 原始仓库[wenshunbiao/docker](https://github.com/wenshunbiao/docker)，进行二次创作
+2. 如果原始仓库没有本仓库的某个服务，你又希望使用，可以把你 Fork 的仓库 `clone` 到本地，然后合并本仓库
 
-感谢 [JetBrains](https://www.jetbrains.com/?from=coreos%20docker) 对开源项目的支持与帮助  
-
-![avatar](./docs/images/jetbrains-variant-100.png)
+```bash
+# 为你的仓库设置一个远程连接，这个远程连接为本仓库
+git remote add toproplus https://github.com/toproplus/docker.git
+# 合并本仓库到你的仓库，先拉取本仓库所有数据
+git fetch toproplus
+# 切换到你想要合并更改的目标分支（如果有需要）
+# git checkout -b toproplus
+# 合并本仓库master分支到你的分支，如果有冲突则解决冲突
+git merge toproplus/master
+# 合并完成后，就可以推送到你的远程Fork仓库了（给本仓库一个star，让更多的人知道）
+git push origin master
+```
 
 ## License
 
