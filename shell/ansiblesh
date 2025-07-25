@@ -1,9 +1,10 @@
 #! /bin/bash
 
 # 使用说明：
-# mkidr ansible && cd ansible
+# mkdir ansible && cd ansible
 # ansiblesh ansible --verson
 # ansiblesh ansible-playbook --verson
+# ansiblesh ansible-playbook example.yml
 
 # 定义配置文件名称
 CONFIG_FILE="ansible.cfg"

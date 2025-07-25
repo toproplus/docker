@@ -1,7 +1,5 @@
 #!/bin/bash
 set -e
-# 初始化
-echo "startup: $(date)"
 
 # 已安装，且默认启用的扩展：
 # gd imagick pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcre pcntl posix
@@ -14,7 +12,8 @@ echo "startup: $(date)"
 # 获取环境变量 ENABLE_EXT，格式为逗号分隔的扩展名
 # 若没设置 ENABLE_EXT 环境变量，则使用默认值
 ENABLE_EXT="${ENABLE_EXT:-apcu,mongodb,swoole}"
-
+# 打印扩展日志
+ENABLE_LOG="${ENABLE_LOG:-1}"
 # PHP 扩展配置目录
 PHP_CONF_DIR="/usr/local/etc/php/conf.d"
 
@@ -25,18 +24,26 @@ enable_php_extension() {
     local dst="${PHP_CONF_DIR}/docker-php-ext-${ext}.ini"
 
     if [ -f "$dst" ]; then
-        echo "PHP extension $ext is already enabled."
+        log "PHP extension $ext is already enabled."
     elif [ -f "$src" ]; then
-        echo "Enabling PHP extension: $ext"
+        log "Enabling PHP extension: $ext"
         mv "$src" "$dst"
     else
-        echo "Warning: PHP extension $ext is not found (neither disabled nor enabled)."
+        log "Warning: PHP extension $ext is not found (neither disabled nor enabled)."
     fi
 }
 
+# 打印日志
+log() {
+  if [ "$ENABLE_LOG" -eq 1 ]; then
+    echo "[$(date "+%Y-%m-%d %H:%M:%S")] $*"
+  fi
+}
+
+
 # 如果 ENABLE_EXT 不为空，则启用对应扩展
 if [ -n "$ENABLE_EXT" ]; then
-    echo "ENABLE_EXT=$ENABLE_EXT"
+    log "ENABLE_EXT=$ENABLE_EXT"
 
     # 使用 POSIX 兼容方式分割逗号字符串
     IFS=','; set -f
@@ -48,9 +55,10 @@ if [ -n "$ENABLE_EXT" ]; then
     done
     set +f; unset IFS
 else
-    echo "No extensions to enable (ENABLE_EXT is empty)."
+    log "No extensions to enable (ENABLE_EXT is empty)."
 fi
 
-echo "started: $(date)"
+log "started"
+
 # 执行传入的命令
 exec "$@"

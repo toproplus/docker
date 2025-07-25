@@ -15,6 +15,7 @@ fi
 
 docker run --rm \
  --net nginx-network \
+ -e ENABLE_LOG=0 \
  -v /home/core/data/php82:/php \
  -v /home/core/data/www/composer:/tmp \
  -v $(pwd):$(pwd) -w $(pwd) timeerror/composer:php8.2.29 sh -c "composer $*"
