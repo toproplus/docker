@@ -15,6 +15,7 @@ fi
 
 docker run --rm \
  --net nginx-network \
+ -e ENABLE_LOG=0 \
  -v /home/core/data/php74:/php \
  -v /home/core/data/www/:/www \
  -v $(pwd):$(pwd) -w $(pwd) timeerror/php:7.4.29-ffmpeg4.4 sh -c "php $*"

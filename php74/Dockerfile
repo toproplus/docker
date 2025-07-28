@@ -8,7 +8,7 @@ FROM php:${PHP_VERSION}-fpm-alpine
 ARG FFMPEG_VERSION=7.1.1
 ARG MONGODB_VERSION=1.15
 
-RUN apk add --no-cache build-base bash curl openssl nasm x264-dev x265-dev libvpx-dev fdk-aac-dev c-ares autoconf unzip \ 
+RUN apk add --no-cache build-base bash curl openssl c-ares unzip nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf \ 
  && rm -rf /var/cache/apk/*
 
 RUN wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && tar -zxvf yasm-1.3.0.tar.gz \
@@ -50,7 +50,7 @@ RUN echo "export TERM=xterm" >> /root/.bashrc \
 
 
 # 删除纯构建时依赖    
-RUN apk del --no-cache build-base nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf
+RUN apk del --no-cache build-base
 
 WORKDIR /www
 
