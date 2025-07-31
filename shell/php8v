@@ -1,0 +1,53 @@
+#! /bin/bash
+ 
+ #--env HTTP_PROXY="http://192.168.19.1:10809" \
+ #--env HTTPS_PROXY="http://192.168.19.1:10809" \
+ #--env NO_PROXY="*.example.com,127.0.0.1" \
+
+if [ ! -f "/home/core/data/php82/php.ini" ]; then
+   /home/core/docker/shell/i php82
+fi
+
+if [ ! -f "/home/core/data/php82/entrypoint.sh" ]; then
+   cp /home/core/docker/php82/conf/entrypoint.sh /home/core/data/php82/entrypoint.sh
+   chmod 755 /home/core/data/php82/entrypoint.sh
+fi 
+
+image_tag="8.2.29"  # 默认 tag
+args=()
+
+# 解析参数，提取 -tag，其余存入 args
+while [[ $# -gt 0 ]]; do
+   case $1 in
+      -tag|--image-tag)
+            image_tag="$2"
+            if [[ -z "$image_tag" ]]; then
+               echo "Error: -tag requires a value" >&2
+               return 1
+            fi
+            shift 2
+            ;;
+      -*)
+            # 保留其他以 - 开头的参数（如 -d, --dry-run 等）
+            args+=("$1")
+            shift
+            ;;
+      *)
+            # 非选项参数（如 install, require）
+            args+=("$1")
+            shift
+            ;;
+   esac
+done
+
+# 指定镜像tag的php命令
+# php8v -tag 8.2.29 -v
+
+docker run --rm \
+ --net nginx-network \
+ -e ENABLE_LOG=0 \
+ -v /home/core/data/php82:/php \
+ -v /home/core/data/www/:/www \
+ -v $(pwd):$(pwd) -w $(pwd) timeerror/php:${image_tag} sh -c "php ${args[*]}"
+
+

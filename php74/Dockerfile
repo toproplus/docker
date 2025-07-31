@@ -2,11 +2,11 @@
 # timeerror/php:7.4.29-ffmpeg4.4 => PHP_VERSION=7.4.29 FFMPEG_VERSION=4.4.6 MONGODB_VERSION=1.15
 # timeerror/php:7.4.33           => PHP_VERSION=7.4.33 FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.20
 
-ARG PHP_VERSION=7.4.29
+ARG PHP_VERSION=7.4.33
 FROM php:${PHP_VERSION}-fpm-alpine
 
 ARG FFMPEG_VERSION=7.1.1
-ARG MONGODB_VERSION=1.15
+ARG MONGODB_VERSION=1.20
 
 RUN apk add --no-cache build-base bash curl openssl c-ares unzip nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf \ 
  && rm -rf /var/cache/apk/*

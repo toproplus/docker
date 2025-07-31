@@ -1,4 +1,5 @@
-# timeerror/php:8.2.29-stage     =>  PHP_VERSION=8.2.29  FFMPEG_VERSION=7.1.1 MONGODB_VERSION=2.1
+# timeerror/php:8.2.29-stage                 =>  PHP_VERSION=8.2.29  FFMPEG_VERSION=7.1.1 MONGODB_VERSION=2.1
+# timeerror/php:8.2.29-stage-mongo1.21       =>  PHP_VERSION=8.2.29  FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.21
 
 # =================== 构建阶段：Build Stage ===================
 ARG PHP_VERSION=8.2.29
