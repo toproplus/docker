@@ -17,6 +17,20 @@ ENABLE_LOG="${ENABLE_LOG:-1}"
 # PHP 扩展配置目录
 PHP_CONF_DIR="/usr/local/etc/php/conf.d"
 
+# 初始化：修复部分扩展的配置文件命名格式不统一的问题
+init_php_extension() {
+    local newrelic="${PHP_CONF_DIR}/newrelic.ini"
+    if [ -f "$newrelic" ]; then
+        # 默认不启用
+        mv "$newrelic" "${PHP_CONF_DIR}/docker-php-ext-newrelic.ini-disabled"
+    fi
+    local memcached="${PHP_CONF_DIR}/xx-php-ext-memcached.ini-disabled"
+    if [ -f "$memcached" ]; then
+        mv "$memcached" "${PHP_CONF_DIR}/docker-php-ext-memcached.ini-disabled"
+    fi
+}
+init_php_extension
+
 # 启用指定扩展
 enable_php_extension() {
     local ext="$1"

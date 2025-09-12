@@ -25,6 +25,8 @@ remote_user = root
 private_key_file = /root/.ssh/id_rsa
 host_key_checking = False
 log_path = ./ansible.log
+stdout_callback = yaml
+display_skipped_hosts = no
 
 [privilege_escalation]
 become_method = sudo

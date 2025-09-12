@@ -17,7 +17,10 @@
 # FROM timeerror/php:8.2.29-stage
 
 # timeerror/composer:php8.2.29-stage-mongo1.21
-FROM timeerror/php:8.2.29-stage-mongo1.21
+# FROM timeerror/php:8.2.29-stage-mongo1.21
+
+# timeerror/composer:php8.3.23
+FROM timeerror/php:8.3.23
 
 WORKDIR /www
 
