@@ -15,7 +15,7 @@ ExecStart=/usr/bin/docker run --name planka --net nginx-network -p 3000:1337 \
 -v /home/core/data/planka/data/attachments:/app/private/attachments \
 -e BASE_URL=http://localhost:3000 \
 -e SECRET_KEY=notsecretkey \
--e DATABASE_URL=postgresql://postgres:yellow@postgres/postgres \
+-e DATABASE_URL=postgresql://postgres:yellow@postgres/planka \
 meltyshev/planka
 
 ExecStop=/usr/bin/docker stop planka

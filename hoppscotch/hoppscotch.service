@@ -1,0 +1,19 @@
+[Unit]
+Description=hoppscotch
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop hoppscotch
+ExecStartPre=-/usr/bin/docker kill hoppscotch
+ExecStartPre=-/usr/bin/docker rm hoppscotch
+#ExecStartPre=-/usr/bin/docker network create nginx-network
+ExecStart=/usr/bin/docker run --name hoppscotch --net nginx-network --env-file .env -p 8000:80 hoppscotch/hoppscotch:latest
+ExecStop=/usr/bin/docker stop hoppscotch
+ExecStop=/usr/bin/docker kill hoppscotch
+
+[Install]
+WantedBy=multi-user.target
