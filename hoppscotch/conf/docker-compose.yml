@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  hoppscotch:
+    image: hoppscotch/hoppscotch:latest
+    container_name: hoppscotch
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8000}:80"
+    env_file:
+      - .env
+    networks:
+      - shared-network
+networks:
+  shared-network:
+    external: true
+    name: nginx-network

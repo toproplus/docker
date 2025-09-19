@@ -5,15 +5,17 @@ Requires=docker.service
 
 [Service]
 Restart=always
-RestartSec=5
+RestartSec=30
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop hoppscotch
 ExecStartPre=-/usr/bin/docker kill hoppscotch
 ExecStartPre=-/usr/bin/docker rm hoppscotch
-#ExecStartPre=-/usr/bin/docker network create nginx-network
-ExecStart=/usr/bin/docker run --name hoppscotch --net nginx-network --env-file .env -p 8000:80 hoppscotch/hoppscotch:latest
+ExecStart=/usr/bin/docker compose -f /home/core/data/hoppscotch/docker-compose.yml --verbose up
 ExecStop=/usr/bin/docker stop hoppscotch
 ExecStop=/usr/bin/docker kill hoppscotch
 
 [Install]
 WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
