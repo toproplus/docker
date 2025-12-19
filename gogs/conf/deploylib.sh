@@ -14,6 +14,7 @@
 # DEPLOY_DATA=$(get_deploy_data_from_repo "$branch")
 # 3. 使用json数据，传给ansible剧本，根据指定配置，灵活设置CI/CD流程
 # ansiblesh ansible-playbook example.yaml -e '$DEPLOY_DATA' -e 'branch=$branch'
+# 4. 在ansible剧本中读取变量：{{ deploy.composer_install | default('true') }}
 
 # 解析 .deployenv 文件内容 key=value 为 JSON 字符串
 extract_deploy_vars() {

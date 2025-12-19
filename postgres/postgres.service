@@ -18,7 +18,7 @@ ExecStart=/usr/bin/docker run --name postgres --net nginx-network -p 5432:5432 \
 -v /home/core/data/postgres/data:/var/lib/postgresql/data \
 -e POSTGRES_USER=postgres \
 -e POSTGRES_PASSWORD=yellow \
-postgres:alpine -c 'config_file=/etc/postgresql/postgresql.conf'
+postgres:17-alpine -c 'config_file=/etc/postgresql/postgresql.conf'
 
 ExecStop=/usr/bin/docker stop postgres
 ExecStop=/usr/bin/docker kill postgres
