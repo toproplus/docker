@@ -1,0 +1,22 @@
+[Unit]
+Description=nginx_proxy_m
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=30
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop nginx_proxy_m
+ExecStartPre=-/usr/bin/docker kill nginx_proxy_m
+ExecStartPre=-/usr/bin/docker rm nginx_proxy_m
+ExecStartPre=-/home/core/docker/shell/install_fleetctl nginx_proxy_m
+ExecStartPre=-/usr/bin/docker network create nginx-network
+ExecStart=/usr/bin/docker run --name nginx_proxy_m --net nginx-network -p 81:81 -p 80:80 -p 443:443 \
+-v /home/core/data/nginx_proxy_m/data:/data -v /home/core/data/nginx_proxy_m/letsencrypt:/etc/letsencrypt docker.io/jc21/nginx-proxy-manager:latest
+ExecStop=/usr/bin/docker stop nginx_proxy_m
+ExecStop=/usr/bin/docker kill nginx_proxy_m
+
+[Install]
+WantedBy=multi-user.target
+
