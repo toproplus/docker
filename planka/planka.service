@@ -8,7 +8,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop planka
 ExecStartPre=-/usr/bin/docker kill planka
 ExecStartPre=-/usr/bin/docker rm planka
-
+ExecStartPre=-/usr/bin/docker network create nginx-network
 ExecStart=/usr/bin/docker run --name planka --net nginx-network -p 3000:1337 \
 -v /home/core/data/planka/data/user-avatars:/app/public/user-avatars \
 -v /home/core/data/planka/data/project-background-images:/app/public/project-background-images \

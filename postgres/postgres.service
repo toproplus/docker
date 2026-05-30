@@ -12,7 +12,6 @@ ExecStartPre=-/usr/bin/docker kill postgres
 ExecStartPre=-/usr/bin/docker rm postgres
 ExecStartPre=-/home/core/docker/shell/install_fleetctl postgres
 ExecStartPre=-/usr/bin/docker network create nginx-network
-
 ExecStart=/usr/bin/docker run --name postgres --net nginx-network -p 5432:5432 \
 -v /home/core/data/postgres/postgresql.conf:/etc/postgresql/postgresql.conf \
 -v /home/core/data/postgres/data:/var/lib/postgresql/data \

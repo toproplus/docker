@@ -9,6 +9,7 @@ RestartSec=30
 TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill mongo
 ExecStartPre=-/usr/bin/docker rm mongo
+ExecStartPre=-/usr/bin/docker network create nginx-network
 ExecStart=/usr/bin/docker run --name mongo --net nginx-network -v /home/core/data/mongo:/data/db mongo:5.0.19-focal
 # ExecStart=/usr/bin/docker run --name mongo --net=host -v /home/core/data/mongo/data:/data/db ivories/mongo
 # -p 27017:27017 -p 28017:28017
