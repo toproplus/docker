@@ -10,7 +10,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop hoppscotch
 ExecStartPre=-/usr/bin/docker kill hoppscotch
 ExecStartPre=-/usr/bin/docker rm hoppscotch
-ExecStart=/usr/bin/docker compose -f /home/core/data/hoppscotch/docker-compose.yml --verbose up
+ExecStart=/usr/bin/docker compose -f /home/core/data/hoppscotch/docker-compose.yml up
 ExecStop=/usr/bin/docker stop hoppscotch
 ExecStop=/usr/bin/docker kill hoppscotch
 

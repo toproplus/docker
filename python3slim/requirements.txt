@@ -1,0 +1,10 @@
+﻿asgiref==3.12.1
+APScheduler==3.11.3
+beautifulsoup4==4.13.4
+curl_cffi==0.16.0
+Django==6.0.7
+django-cors-headers==4.9.0
+httpx==0.28.1
+mysqlclient==2.2.8
+pillow==12.3.0
+soupsieve==2.9.1

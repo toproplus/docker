@@ -1,0 +1,28 @@
+[Unit]
+Description=python3slim
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=30
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop python3slim
+ExecStartPre=-/usr/bin/docker kill python3slim
+ExecStartPre=-/usr/bin/docker rm python3slim
+ExecStartPre=-/home/core/docker/shell/install_fleetctl python3slim
+ExecStartPre=-/usr/bin/docker network create nginx-network
+ExecStart=/usr/bin/docker run --name python3slim --net nginx-network \
+    -e DJANGO_SETTINGS_MODULE=config.settings.dev \
+    -p 8000:8000 \
+    -v /home/core/data/www:/www \
+    timeerror/python:3.13-slim
+ExecStop=/usr/bin/docker stop python3slim
+ExecStop=/usr/bin/docker kill python3slim
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
+
