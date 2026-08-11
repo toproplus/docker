@@ -1,7 +1,7 @@
 # timeerror/php:8.2.5            =>  PHP_VERSION=8.2.5   FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.15
 # timeerror/php:8.2.29           =>  PHP_VERSION=8.2.29  FFMPEG_VERSION=7.1.1 MONGODB_VERSION=2.1
 
-ARG PHP_VERSION=8.2.29
+ARG PHP_VERSION=8.2.30
 
 FROM php:${PHP_VERSION}-fpm-alpine
 
