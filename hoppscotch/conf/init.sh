@@ -3,6 +3,9 @@
 # 手动复制配置文件，先修改好配置
 # cp /home/core/docker/hoppscotch/conf/.env .env
 
+# 试运行
+# docker run --rm -t --name hoppscotch --net nginx-network --env-file .env -p 8000:80 hoppscotch/hoppscotch:latest
+
 # 首次启动需要初始化数据库
 # 资料参考：https://docs.hoppscotch.io/documentation/self-host/community-edition/install-and-build#running-migrations
 
