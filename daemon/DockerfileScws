@@ -1,0 +1,79 @@
+# timeerror/daemon:php74 
+# timeerror/daemon:php7.4.29-ffmpeg4.4   
+# FROM timeerror/php:7.4.29-ffmpeg4.4 
+
+# timeerror/daemon:php7.4.29  
+# FROM timeerror/php:7.4.29    
+
+# timeerror/daemon:php7.4.33
+# FROM timeerror/php:7.4.33
+
+# timeerror/daemon:php82
+# timeerror/daemon:php8.2.5 
+# FROM timeerror/php:8.2.5       
+
+# timeerror/daemon:php8.2.29
+# FROM timeerror/php:8.2.29        
+
+# timeerror/daemon:php8.2.29-stage
+# FROM timeerror/php:8.2.29-stage
+
+# timeerror/daemon:php8.2.29-stage-mongo1.21
+# FROM timeerror/php:8.2.29-stage-mongo1.21
+
+# timeerror/daemon:php8.3.23
+# FROM timeerror/php:8.3.23
+
+# timeerror/daemon:php74-scws
+FROM timeerror/daemon:php74
+
+# RUN wget https://getcomposer.org/download/2.5.5/composer.phar
+# RUN chmod +x composer.phar
+# RUN mv composer.phar /usr/local/bin/composer
+# RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+# RUN composer config -gl | grep repositories.packagist.org.url
+
+RUN apk add --no-cache --virtual .build-deps build-base bash curl openssl c-ares unzip nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf \
+    gcc g++ make libc-dev bzip2 bzip2-dev \
+    && rm -rf /var/cache/apk/*
+
+# 下载并编译 SCWS 核心库
+RUN cd /tmp \
+    && curl -fSL 'http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2' -o scws-1.2.3.tar.bz2 \
+    && tar -xjf scws-1.2.3.tar.bz2 \
+    && cd scws-1.2.3 \
+    && ./configure --prefix=/usr/local/scws \
+    && make -j$(nproc) \
+    && make install
+
+# 编译 SCWS PHP 扩展
+RUN cd /tmp/scws-1.2.3/phpext \
+    && phpize \
+    && ./configure --with-php-config=/usr/local/bin/php-config --with-scws=/usr/local/scws \
+    && make -j$(nproc) \
+    && make install
+
+# 下载 UTF-8 词典
+RUN cd /usr/local/scws/etc \
+    && curl -fSL 'http://www.xunsearch.com/scws/down/scws-dict-chs-utf8.tar.bz2' -o dict-utf8.tar.bz2 \
+    && tar -xjf dict-utf8.tar.bz2 \
+    && rm dict-utf8.tar.bz2
+
+# 启用 SCWS 扩展并配置默认词典路径
+RUN echo "extension=scws.so" > /usr/local/etc/php/conf.d/docker-php-ext-scws.ini \
+    && echo "scws.default.charset=utf8" >> /usr/local/etc/php/conf.d/docker-php-ext-scws.ini \
+    && echo "scws.default.fpath=/usr/local/scws/etc" >> /usr/local/etc/php/conf.d/docker-php-ext-scws.ini
+
+# 可选：将词典目录加入环境变量，方便 PHP 代码中引用
+ENV SCWS_DICT_PATH=/usr/local/scws/etc
+
+RUN apk del .build-deps build-base nasm  autoconf gcc g++ make
+
+# 入口脚本
+COPY conf/php/entrypoint.sh /php/entrypoint.sh
+RUN chmod 755 /php/entrypoint.sh
+ENTRYPOINT ["/php/entrypoint.sh"]
+
+WORKDIR /app
+
+CMD /usr/bin/supervisord -c /supervisor/supervisord.conf -n

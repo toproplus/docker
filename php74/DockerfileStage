@@ -1,15 +1,34 @@
 # timeerror/php:7.4.29           => PHP_VERSION=7.4.29 FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.20
 # timeerror/php:7.4.29-ffmpeg4.4 => PHP_VERSION=7.4.29 FFMPEG_VERSION=4.4.6 MONGODB_VERSION=1.15
 # timeerror/php:7.4.33           => PHP_VERSION=7.4.33 FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.20
+# timeerror/php:7.4.33-scws      => PHP_VERSION=7.4.33 FFMPEG_VERSION=7.1.1 MONGODB_VERSION=1.20
 
 ARG PHP_VERSION=7.4.33
-FROM php:${PHP_VERSION}-fpm-alpine
+# 使用多阶段构建以减小最终镜像体积
+FROM php:${PHP_VERSION}-fpm-alpine AS builder
 
 ARG FFMPEG_VERSION=7.1.1
 ARG MONGODB_VERSION=1.20
 
-RUN apk add --no-cache build-base bash curl openssl c-ares unzip nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf \ 
- && rm -rf /var/cache/apk/*
+RUN apk add --no-cache --virtual .build-deps build-base bash curl openssl c-ares unzip nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf \
+    gcc g++ make libc-dev bzip2 bzip2-dev \
+    && rm -rf /var/cache/apk/*
+
+# 下载并编译 SCWS 核心库
+RUN cd /tmp \
+    && curl -fSL 'http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2' -o scws-1.2.3.tar.bz2 \
+    && tar -xjf scws-1.2.3.tar.bz2 \
+    && cd scws-1.2.3 \
+    && ./configure --prefix=/usr/local/scws \
+    && make -j$(nproc) \
+    && make install
+
+    # 编译 SCWS PHP 扩展
+RUN cd /tmp/scws-1.2.3/phpext \
+    && phpize \
+    && ./configure --with-php-config=/usr/local/bin/php-config --with-scws=/usr/local/scws \
+    && make -j$(nproc) \
+    && make install
 
 RUN wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && tar -zxvf yasm-1.3.0.tar.gz \
  && rm yasm-1.3.0.tar.gz && cd yasm-1.3.0 && ./configure && make && make install && cd ../ && rm -rf yasm-1.3.0
@@ -40,8 +59,22 @@ RUN IPE_DONT_ENABLE=1 install-php-extensions memcached apcu ssh2 protobuf \
 
 RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable
 
-RUN chmod -R 755 /usr/local/lib/php/extensions/no-debug-non-zts-*
 
+# 删除纯构建时依赖    
+RUN apk del --no-cache build-base .build-deps
+
+# ========== 最终运行镜像 ==========
+FROM php:7.4.33-fpm-alpine
+
+# 从构建阶段复制 FFmpeg 和 PHP 扩展
+COPY --from=builder /lib /lib
+COPY --from=builder /usr/lib /usr/lib
+COPY --from=builder /usr/share /usr/share
+COPY --from=builder /usr/local /usr/local
+COPY --from=builder /usr/local/lib /usr/local/lib
+COPY --from=builder /usr/local/etc /usr/local/etc
+
+RUN chmod -R 755 /usr/local/lib/php/extensions/no-debug-non-zts-*
 
 RUN echo "export TERM=xterm" >> /root/.bashrc \
     && mv /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf.backup \
@@ -49,9 +82,23 @@ RUN echo "export TERM=xterm" >> /root/.bashrc \
     && ln -s /php/php.ini /usr/local/etc/php/php.ini \
     && ln -s /php/php-fpm.conf /usr/local/etc/php-fpm.conf
 
+# 安装运行时依赖，确保基础环境完整  
+RUN apk add --no-cache bash openssl c-ares unzip libvpx x264-libs x265-libs fdk-aac libc-dev bzip2 bzip2-dev \
+    && rm -rf /var/cache/apk/*
 
-# 删除纯构建时依赖    
-RUN apk del --no-cache build-base
+# 下载 UTF-8 词典
+RUN cd /usr/local/scws/etc \
+    && curl -fSL 'http://www.xunsearch.com/scws/down/scws-dict-chs-utf8.tar.bz2' -o dict-utf8.tar.bz2 \
+    && tar -xjf dict-utf8.tar.bz2 \
+    && rm dict-utf8.tar.bz2
+
+# 启用 SCWS 扩展并配置默认词典路径
+RUN echo "extension=scws.so" > /usr/local/etc/php/conf.d/docker-php-ext-scws.ini \
+    && echo "scws.default.charset=utf8" >> /usr/local/etc/php/conf.d/docker-php-ext-scws.ini \
+    && echo "scws.default.fpath=/usr/local/scws/etc" >> /usr/local/etc/php/conf.d/docker-php-ext-scws.ini
+
+# 可选：将词典目录加入环境变量，方便 PHP 代码中引用
+ENV SCWS_DICT_PATH=/usr/local/scws/etc
 
 WORKDIR /www
 
