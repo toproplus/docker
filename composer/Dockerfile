@@ -24,6 +24,9 @@ FROM timeerror/php:8.3.23
 
 WORKDIR /www
 
+# 部分库需要依赖git拉取另外的代码
+RUN apk update && apk add --no-cache git && rm -rf /var/cache/apk/*
+
 RUN mkdir -p /tmp/composer && chmod -R 777 /tmp
 ENV COMPOSER_HOME /tmp
 

@@ -40,7 +40,7 @@ RUN apk add --no-cache --virtual .build-deps build-base bash curl openssl c-ares
 # 下载并编译 SCWS 核心库
 RUN cd /tmp \
     && curl -fSL 'http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2' -o scws-1.2.3.tar.bz2 \
-    && tar -xjf scws-1.2.3.tar.bz2 \
+    && tar -xjf scws-1.2.3.tar.bz2 && rm scws-1.2.3.tar.bz2 \
     && cd scws-1.2.3 \
     && ./configure --prefix=/usr/local/scws \
     && make -j$(nproc) \
