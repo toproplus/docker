@@ -30,12 +30,13 @@ RUN install-php-extensions mysqli mcrypt
 # 只安装，不启用，通过入口脚本动态启用
 
 # 容易安装失败的先安装
-RUN IPE_DONT_ENABLE=1 install-php-extensions blackfire 
+# 开发、调试与性能分析扩展
+RUN IPE_DONT_ENABLE=1 install-php-extensions excimer
 
-RUN IPE_DONT_ENABLE=1 install-php-extensions xdebug memcached apcu ssh2 protobuf \
-    ast bitset uuid igbinary brotli bz2 calendar csv dba ds enchant ev excimer \
+RUN IPE_DONT_ENABLE=1 install-php-extensions memcached apcu ssh2 protobuf \
+    bitset uuid igbinary brotli bz2 calendar csv dba ds enchant ev \
     exif ffi grpc maxminddb xsl gettext intl snmp msgpack snappy inotify \
-    rdkafka tideways ioncube_loader newrelic uopz swoole-^4.8@stable
+    rdkafka ioncube_loader swoole-^4.8@stable
 
 RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable
 

@@ -1,0 +1,32 @@
+[Unit]
+Description=pure_ftpd
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=30
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker stop pure_ftpd
+ExecStartPre=-/usr/bin/docker kill pure_ftpd
+ExecStartPre=-/usr/bin/docker rm pure_ftpd
+ExecStartPre=-/home/core/docker/shell/install_fleetctl pure_ftpd
+ExecStartPre=-/usr/bin/docker network create nginx-network
+ExecStart=/usr/bin/docker run --name pure_ftpd --net nginx-network \
+    -v /home/core/data/www:/ftp \
+    -v /home/core/data/pure_ftpd/config:/etc/pure-ftpd \
+    -p 21:21 \
+    -p 30000-30009:30000-30009 \
+    -e FTP_PASSIVE_PORTS=30000:30009 \
+    -e PUBLICHOST=服务器公网IP \
+    -e TLS_SSL=1 \
+    stilliard/pure-ftpd:hardened \
+    pure-ftpd -c 30 -C 10 -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -Y 1 -P 服务器公网IP -p 30000:30009
+ExecStop=/usr/bin/docker stop pure_ftpd
+ExecStop=/usr/bin/docker kill pure_ftpd
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true
