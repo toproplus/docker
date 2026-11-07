@@ -6,8 +6,8 @@ set -e
 
 # 已安装，但未启用的扩展
 # apcu mongodb swoole ffi ev igbinary memcached bitset ssh2 protobuf uuid  
-# brotli bz2 calendar csv dba ds enchant excimer exif grpc maxminddb xsl gettext intl snmp msgpack 
-# snappy inotify rdkafka ioncube_loader
+# bz2 calendar csv dba ds enchant excimer exif grpc maxminddb xsl gettext intl snmp msgpack 
+# snappy inotify rdkafka
 # 动态启用
 # 获取环境变量 ENABLE_EXT，格式为逗号分隔的扩展名
 # 若没设置 ENABLE_EXT 环境变量，则使用默认值

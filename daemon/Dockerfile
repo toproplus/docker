@@ -8,24 +8,16 @@
 # timeerror/daemon:php7.4.33
 # FROM timeerror/php:7.4.33
 
-# timeerror/daemon:php82
-# timeerror/daemon:php8.2.5 
-# FROM timeerror/php:8.2.5       
-
-# timeerror/daemon:php8.2.29
-# FROM timeerror/php:8.2.29        
-
 # timeerror/daemon:php8.2.29-stage
 # FROM timeerror/php:8.2.29-stage
 
-# timeerror/daemon:php8.2.29-stage-mongo1.21
-# FROM timeerror/php:8.2.29-stage-mongo1.21
+# timeerror/daemon:php8.2.35
+# FROM timeerror/php:8.2.35
 
-# timeerror/daemon:php8.3.23
-FROM timeerror/php:8.3.23
+# timeerror/daemon:php8.2.35-mongo1.16.2
+FROM timeerror/php:8.2.35-mongo1.16.2
 
-RUN apk update && apk add --no-cache supervisor \
-   && rm -rf /var/cache/apk/*
+RUN apk add --no-cache supervisor
 
 # RUN wget https://getcomposer.org/download/2.5.5/composer.phar
 # RUN chmod +x composer.phar
@@ -34,5 +26,5 @@ RUN apk update && apk add --no-cache supervisor \
 # RUN composer config -gl | grep repositories.packagist.org.url
 
 WORKDIR /app
-# ENTRYPOINT [""]
+
 CMD /usr/bin/supervisord -c /supervisor/supervisord.conf -n

@@ -7,7 +7,7 @@ set -e
 # 已安装，但未启用的扩展
 # apcu mongodb swoole ffi ev igbinary xdebug memcached ast bitset ssh2 protobuf uuid blackfire 
 # brotli bz2 calendar csv dba ds enchant excimer exif grpc maxminddb xsl gettext intl snmp msgpack 
-# snappy inotify rdkafka tideways ioncube_loader newrelic uopz
+# snappy inotify rdkafka tideways uopz
 # 动态启用
 # 获取环境变量 ENABLE_EXT，格式为逗号分隔的扩展名
 # 若没设置 ENABLE_EXT 环境变量，则使用默认值
@@ -19,11 +19,6 @@ PHP_CONF_DIR="/usr/local/etc/php/conf.d"
 
 # 初始化：修复部分扩展的配置文件命名格式不统一的问题
 init_php_extension() {
-    local newrelic="${PHP_CONF_DIR}/newrelic.ini"
-    if [ -f "$newrelic" ]; then
-        # 默认不启用
-        mv "$newrelic" "${PHP_CONF_DIR}/docker-php-ext-newrelic.ini-disabled"
-    fi
     local memcached="${PHP_CONF_DIR}/xx-php-ext-memcached.ini-disabled"
     if [ -f "$memcached" ]; then
         mv "$memcached" "${PHP_CONF_DIR}/docker-php-ext-memcached.ini-disabled"

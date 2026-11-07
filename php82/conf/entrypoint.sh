@@ -2,16 +2,16 @@
 set -e
 
 # 已安装，且默认启用的扩展：
-# gd imagick pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcre pcntl posix
+# gd pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcntl
 
 # 已安装，但未启用的扩展
-# mongodb swoole ffi ev igbinary xdebug memcached bitset ssh2 protobuf uuid 
-# brotli bz2 calendar csv dba ds enchant excimer exif grpc maxminddb xsl gettext intl snmp msgpack 
-# snappy inotify rdkafka ioncube_loader
+# mongodb swoole ev igbinary memcached ssh2 protobuf uuid 
+# calendar ds exif grpc maxminddb intl snmp msgpack 
+# snappy inotify rdkafka
 # 动态启用扩展
 # 获取环境变量 ENABLE_EXT，格式为逗号分隔的扩展名
 # 若没设置 ENABLE_EXT 环境变量，则使用默认值
-ENABLE_EXT="${ENABLE_EXT:-mongodb,swoole}"
+ENABLE_EXT="${ENABLE_EXT:-mongodb}"
 # 打印扩展日志
 ENABLE_LOG="${ENABLE_LOG:-1}"
 # PHP 扩展配置目录

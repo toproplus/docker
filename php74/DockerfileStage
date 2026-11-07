@@ -53,9 +53,9 @@ RUN install-php-extensions mysqli mcrypt
 RUN IPE_DONT_ENABLE=1 install-php-extensions excimer
 
 RUN IPE_DONT_ENABLE=1 install-php-extensions memcached apcu ssh2 protobuf \
-    bitset uuid igbinary brotli bz2 calendar csv dba ds enchant ev \
+    bitset uuid igbinary bz2 calendar csv dba ds enchant ev \
     exif ffi grpc maxminddb xsl gettext intl snmp msgpack snappy inotify \
-    rdkafka ioncube_loader swoole-^4.8@stable
+    rdkafka swoole-^4.8@stable
 
 RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable
 

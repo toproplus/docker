@@ -1,12 +1,11 @@
-# timeerror/php:8.3.23          =>  PHP_VERSION=8.3.23  MONGODB_VERSION=2.1
+# timeerror/php:8.3.36          =>  PHP_VERSION=8.3.36  MONGODB_VERSION=2.5.5
 
 # =================== 构建阶段：Build Stage ===================
-ARG PHP_VERSION=8.3.23
+ARG PHP_VERSION=8.3.36
 
 FROM php:${PHP_VERSION}-fpm-alpine AS builder
 
-ARG FFMPEG_VERSION=7.1.1
-ARG MONGODB_VERSION=2.1
+ARG MONGODB_VERSION=2.5.5
 
 RUN apk add --no-cache build-base bash curl openssl c-ares unzip nasm x264-dev x265-dev libvpx-dev fdk-aac-dev autoconf yasm ffmpeg \ 
  && rm -rf /var/cache/apk/*
@@ -26,10 +25,10 @@ RUN IPE_DONT_ENABLE=1 install-php-extensions maxminddb
 RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable
 RUN IPE_DONT_ENABLE=1 install-php-extensions swoole-^6.2@stable
 
-RUN IPE_DONT_ENABLE=1 install-php-extensions xdebug memcached ssh2 protobuf \
-    bitset uuid igbinary brotli bz2 calendar csv dba ds enchant excimer \
+RUN IPE_DONT_ENABLE=1 install-php-extensions memcached ssh2 protobuf \
+    bitset uuid igbinary bz2 calendar csv dba ds enchant excimer \
     exif ffi grpc xsl gettext intl snmp snappy inotify \
-    rdkafka ioncube_loader
+    rdkafka
 
 # 删除纯构建时依赖       
 RUN apk del --no-cache build-base
