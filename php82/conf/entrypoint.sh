@@ -1,12 +1,15 @@
 #!/bin/bash
 set -e
 
-# 已安装，且默认启用的扩展：
-# gd pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcntl apcu
+# 已安装，且默认启用的扩展（opcache 由基础镜像自带）：
+# gd imagick pdo_mysql mysqli pdo_pgsql pgsql amqp bcmath zip redis sockets
+# event ev decimal soap pcntl apcu igbinary
+# bz2 exif xsl gettext intl snmp（内置扩展，安装即启用；ffi 已在 Dockerfile 中禁用）
 
-# 已安装，但未启用的扩展
-# mongodb swoole igbinary memcached ssh2 protobuf uuid 
-# exif grpc intl snmp msgpack rdkafka bz2 ffi
+# 已安装，但未启用的扩展（可通过 ENABLE_EXT 动态启用）
+# mongodb swoole memcached ssh2 protobuf uuid grpc msgpack rdkafka inotify snappy maxminddb（PECL 扩展）
+# ffi（内置扩展，Dockerfile 中已将其 ini 改为 .ini-disabled）
+# 示例：ENABLE_EXT=mongodb,swoole（默认只启用 mongodb）
 # 动态启用扩展
 # 获取环境变量 ENABLE_EXT，格式为逗号分隔的扩展名
 # 若没设置 ENABLE_EXT 环境变量，则使用默认值
