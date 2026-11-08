@@ -2,12 +2,11 @@
 set -e
 
 # 已安装，且默认启用的扩展：
-# gd pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcntl
+# gd pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcntl apcu
 
 # 已安装，但未启用的扩展
-# mongodb swoole ev igbinary memcached ssh2 protobuf uuid 
-# calendar ds exif grpc maxminddb intl snmp msgpack 
-# snappy inotify rdkafka
+# mongodb swoole igbinary memcached ssh2 protobuf uuid 
+# exif grpc intl snmp msgpack rdkafka bz2 ffi
 # 动态启用扩展
 # 获取环境变量 ENABLE_EXT，格式为逗号分隔的扩展名
 # 若没设置 ENABLE_EXT 环境变量，则使用默认值

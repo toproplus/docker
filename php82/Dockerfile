@@ -10,21 +10,22 @@ FROM php:${PHP_VERSION}-fpm-alpine
 # ARG MONGODB_VERSION=2.5
 ARG MONGODB_VERSION=1.16
 
-RUN sed -i 's@dl-cdn.alpinelinux.org@mirrors.cloud.tencent.com@g' /etc/apk/repositories
-
-RUN apk add --no-cache build-base bash curl openssl c-ares unzip ffmpeg autoconf
+RUN apk add --no-cache build-base bash curl openssl c-ares zip unzip ffmpeg autoconf
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions gd pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets event decimal soap pcntl
+RUN sed -i 's@dl-cdn.alpinelinux.org@mirrors.cloud.tencent.com@g' /etc/apk/repositories
+
+RUN install-php-extensions gd pdo_mysql pdo_pgsql amqp bcmath opcache zip redis sockets \
+    event decimal soap pcntl apcu
 
 # 只安装，不启用，通过入口脚本动态启用
 # 容易安装失败的先安装
 RUN IPE_DONT_ENABLE=1 install-php-extensions msgpack igbinary-^3.2@stable \
-    maxminddb  memcached-^3.3@stable uuid snappy inotify ds exif
+    memcached-^3.3@stable uuid exif bz2 ffi
 
-RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable swoole-^6.2@stable ev ssh2 protobuf rdkafka \
-    calendar grpc intl snmp
+RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable \
+    swoole-^6.2@stable ssh2 protobuf rdkafka grpc intl snmp
 
 RUN mv /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf.backup \
     && mkdir /php \
