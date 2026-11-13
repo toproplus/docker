@@ -1,6 +1,6 @@
 
-# timeerror/php:8.2.35-mongo1.16.2        =>  PHP_VERSION=8.2.35   MONGODB_VERSION=1.16.2
 # timeerror/php:8.2.35                     =>  PHP_VERSION=8.2.35   MONGODB_VERSION=2.5.5
+# timeerror/php:8.2.35-mongo1.16.2         =>  PHP_VERSION=8.2.35   MONGODB_VERSION=1.16.2
 
 ARG PHP_VERSION=8.2.35
 
@@ -24,10 +24,6 @@ RUN install-php-extensions gd imagick pdo_mysql mysqli pdo_pgsql pgsql amqp bcma
     event ev decimal soap pcntl apcu igbinary-^3.2@stable \
     bz2 exif ffi xsl gettext intl snmp
 
-# ffi 默认不加载（安全考虑）；需要时启动容器加 ENABLE_EXT=...,ffi 即可启用
-RUN mv /usr/local/etc/php/conf.d/docker-php-ext-ffi.ini \
-       /usr/local/etc/php/conf.d/docker-php-ext-ffi.ini-disabled
-
 # 只安装，不启用，通过入口脚本动态启用（此处均为 PECL 扩展，IPE_DONT_ENABLE 才真正生效）
 # 容易安装失败的先安装
 RUN IPE_DONT_ENABLE=1 install-php-extensions msgpack \
@@ -36,13 +32,17 @@ RUN IPE_DONT_ENABLE=1 install-php-extensions msgpack \
 RUN IPE_DONT_ENABLE=1 install-php-extensions mongodb-^${MONGODB_VERSION}@stable \
     swoole-^6.2@stable ssh2 protobuf rdkafka inotify snappy grpc
 
+# ffi 默认不加载（安全考虑）；需要时启动容器加 ENABLE_EXT=...,ffi 即可启用
+RUN mv /usr/local/etc/php/conf.d/docker-php-ext-ffi.ini \
+    /usr/local/etc/php/conf.d/docker-php-ext-ffi.ini-disabled
+
+# 配置软链 + 清理纯构建期依赖（合并为一层，构建依赖不残留、层数更少）
 RUN mv /usr/local/etc/php-fpm.conf /usr/local/etc/php-fpm.conf.backup \
     && mkdir /php \
     && ln -sf /php/php.ini /usr/local/etc/php/php.ini \
-    && ln -sf /php/php-fpm.conf /usr/local/etc/php-fpm.conf
-
-# 删除纯构建时依赖       
-RUN apk del --no-cache build-base autoconf && rm -rf /var/cache/apk/* /tmp/*   
+    && ln -sf /php/php-fpm.conf /usr/local/etc/php-fpm.conf \
+    && apk del --no-cache build-base autoconf \
+    && rm -rf /var/cache/apk/* /tmp/*
 
 ENV TERM=xterm
 
@@ -55,4 +55,4 @@ COPY conf/entrypoint.sh /php/entrypoint.sh
 RUN chmod 755 /php/entrypoint.sh
 ENTRYPOINT ["/php/entrypoint.sh"]
 
-CMD php-fpm
+CMD ["php-fpm"]

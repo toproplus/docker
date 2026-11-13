@@ -19,12 +19,21 @@ ENABLE_LOG="${ENABLE_LOG:-1}"
 # PHP 扩展配置目录
 PHP_CONF_DIR="/usr/local/etc/php/conf.d"
 
-# 初始化：修复部分扩展的配置文件命名格式不统一的问题
+# 初始化：统一 install-php-extensions 生成的非标准 ini 命名
+# （例如 memcached 生成的是 xx-php-ext-memcached.ini-disabled）
 init_php_extension() {
-    local memcached="${PHP_CONF_DIR}/xx-php-ext-memcached.ini-disabled"
-    if [ -f "$memcached" ]; then
-        mv "$memcached" "${PHP_CONF_DIR}/docker-php-ext-memcached.ini-disabled"
-    fi
+    local f base name dst
+    for f in "${PHP_CONF_DIR}"/*-php-ext-*.ini-disabled; do
+        [ -e "$f" ] || continue          # 未匹配到文件时 glob 会原样返回
+        base=$(basename "$f")
+        name=${base#*-php-ext-}
+        name=${name%.ini-disabled}
+        dst="${PHP_CONF_DIR}/docker-php-ext-${name}.ini-disabled"
+        if [ -f "$dst" ]; then
+            continue
+        fi
+        mv "$f" "$dst"
+    done
 }
 init_php_extension
 
